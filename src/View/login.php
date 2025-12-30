@@ -1,5 +1,51 @@
 <?php
+require "/projeto-tech-company/src/Model/db.php";
 
+// desabilitação do login automatico
+header("Cache-control: no-store, no-cache, must-revalidate");
+
+session_start();
+
+// se estiver logado, vai direto para ----
+if (isset($_SESSION['cpf_usuario'])) {
+    header("Location: /projeto-tech-company/src/View/home.php");
+    exit;
+}
+
+$erro = "";
+
+if ($_SERVER["REQUEST_METHOD"] === 'POST') {
+
+    $cpf   = trim($_POST['campo_cpf'] ?? "");
+    $email = trim($_POST['campo_email'] ?? "");
+    $senha = $_POST['campo_senha'] ?? "";
+
+    $stmt = $conn->prepare("
+        SELECT id_usuario, cpf_usuario, email_usuario, senha_usuario
+        FROM usuario
+        WHERE cpf_usuario = ? AND email_usuario = ?
+    ");
+
+    $stmt->bind_param("ss", $cpf, $email);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    if ($resultado->num_rows === 1) {
+        $dados = $resultado->fetch_assoc();
+
+        if (password_verify($senha, $dados['senha_usuario'])) {
+            $_SESSION['id_usuario'] = $dados['id_usuario'];
+            $_SESSION['cpf_usuario'] = $dados['cpf_usuario'];
+            $_SESSION['email_usuario'] = $dados['email_usuario'];
+            $_SESSION['conectado'] = true;
+
+            header("Location: /projeto-tech-company/src/View/home.php");
+            exit;
+        }
+    }
+
+    $erro = "CPF, email ou senha inválidos";
+}
 
 ?>
 
@@ -46,9 +92,9 @@
    <section id = "formulario_login_mobile">
         <main>
             <div class="container">
-                <form method="post">
+                <form method="post" autocomplete="off">
                     <label>CPF</label>
-                    <input type="number" name = "campo_cpf" id = "campo_email" placeholder="CPF: " required>
+                    <input type="text" name = "campo_cpf" id = "campo_cpf" placeholder="CPF: " required>
 
                     <label>E-mail</label>
                     <input type="email" name="campo_email" id="campo_email" placeholder = "E-mail: " required>
