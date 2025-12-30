@@ -1,3 +1,8 @@
+<?php
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -33,25 +38,31 @@
             </nav>
         </header>
     </section>
+
    <div class="boas_vindas">
         <h1>Bem-vindo(a) de volta!</h1>
    </div>
-    <div class="container">
-        <form method="post">
-            <label>CPF</label>
-            <input type="number" name = "campo_cpf" id = "campo_email" placeholder="CPF: " required>
 
-            <label>E-mail</label>
-            <input type="email" name="campo_email" id="campo_email" placeholder = "E-mail: " required>
+   <section id = "formulario_login_mobile">
+        <main>
+            <div class="container">
+                <form method="post">
+                    <label>CPF</label>
+                    <input type="number" name = "campo_cpf" id = "campo_email" placeholder="CPF: " required>
 
-            <label>Senha</label>
-            <input type="password" name="campo_senha" id="campo_senha" placeholder = "Senha: " required>
+                    <label>E-mail</label>
+                    <input type="email" name="campo_email" id="campo_email" placeholder = "E-mail: " required>
 
-            <a href="#">Esqueci a senha</a>
-            <a href="/projeto-tech-company/src/View/cadastro.php">Não tem conta?</a>
-            
-            <button type="submit">Entrar</button>
-        </form>
-    </div>
+                    <label>Senha</label>
+                    <input type="password" name="campo_senha" id="campo_senha" placeholder = "Senha: " required>
+
+                    <a href="#">Esqueci a senha</a>
+                    <a href="/projeto-tech-company/src/View/cadastro.php">Não tem conta?</a>
+
+                    <button type="submit">Entrar</button>
+                </form>
+            </div>
+        </main>
+    </section>
 </body>
 </html>
