@@ -1,12 +1,12 @@
 <?php
 $host = "localhost";
 $usuario = "root";
-$senha = "root";
+$senha = "";
 $db = "db_tech_company";
 
-$conexao = new mysqli($host, $usuario, $senha, $db);
+$conn = new mysqli($host, $usuario, $senha, $db);
 
-if($conexao->connect_error){
-    die("Erro na conexao: " . $conexao->connect_error);
+if($conn->connect_error){
+    die("Erro na conexao: " . $conn->connect_error);
 }
 ?>

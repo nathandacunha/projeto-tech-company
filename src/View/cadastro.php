@@ -1,3 +1,26 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $cpf   = $_POST['campo-cpf']   ?? null;
+    $email = $_POST['campo-email'] ?? null;
+    $senha = $_POST['campo-senha'] ?? null;
+
+    if (!$cpf || !$email || !$senha) {
+        die("Dados inválidos.");
+    }
+
+    $_SESSION['cpf_usuario']   = $cpf;
+    $_SESSION['email_usuario'] = $email;
+    $_SESSION['senha_usuario'] = password_hash($senha, PASSWORD_DEFAULT);
+
+    header("Location: cadastro_parte2.php");
+    exit;
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -46,7 +69,7 @@
                 <label>Senha: </label>
                 <input type="password" name="campo-senha" id="campo-senha" placeholder="Senha: " required>
 
-                <button><a href="/projeto-tech-company/src/View/cadastro_parte2.php">Continuar</a></button>
+               <button type="submit">Continuar</button>
             </form>
         </main>
     </section>

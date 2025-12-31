@@ -1,3 +1,106 @@
+<?php
+// Configuração de erros (apenas para desenvolvimento)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+session_start();
+
+// Verificação da sessão da etapa 1
+$etapa1Completa = isset(
+    $_SESSION['cpf_usuario'],
+    $_SESSION['email_usuario'],
+    $_SESSION['senha_usuario']
+);
+
+if (!$etapa1Completa) {
+    header('Location: /projeto-tech-company/src/View/cadastro.php');
+    exit;
+}
+
+require $_SERVER['DOCUMENT_ROOT'] . "/projeto-tech-company/src/Model/db.php";
+
+$erro = '';
+$sucesso = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Sanitização e validação dos inputs
+    $nome = filter_input(INPUT_POST, 'campo_nome_usuario', FILTER_SANITIZE_STRING);
+    $cnpj = preg_replace('/[^0-9]/', '', $_POST['campo_cnpj'] ?? '');
+    $telefone = preg_replace('/[^0-9]/', '', $_POST['campo_telefone'] ?? '');
+    
+    // Validações
+    if (empty($nome) || empty($cnpj) || empty($telefone)) {
+        $erro = 'Todos os campos são obrigatórios.';
+    } elseif (strlen($cnpj) !== 14) {
+        $erro = 'CNPJ deve conter 14 dígitos.';
+    } elseif (strlen($telefone) < 10) {
+        $erro = 'Telefone inválido.';
+    } else {
+        try {
+            // Verifica se CNPJ já existe
+            $stmt = $conn->prepare("
+                SELECT id_usuario 
+                FROM usuario 
+                WHERE cnpj_usuario = ?
+            ");
+            $stmt->bind_param('s', $cnpj);
+            $stmt->execute();
+            
+            if ($stmt->get_result()->num_rows > 0) {
+                $erro = 'CNPJ já cadastrado no sistema.';
+            } else {
+                // Hash da senha (boas práticas de segurança)
+                $senhaHash = password_hash($_SESSION['senha_usuario'], PASSWORD_DEFAULT);
+                
+                // Inserção com campos corretos
+                $stmt = $conn->prepare("
+                    INSERT INTO usuario (
+                        cpf_usuario,
+                        cnpj_usuario,
+                        email_usuario,
+                        telefone_usuario,
+                        nome_usuario,
+                        senha_usuario,
+                        data_cadastro
+                    ) VALUES (?, ?, ?, ?, ?, ?, NOW())
+                ");
+                
+                $stmt->bind_param(
+                    'ssssss',
+                    $_SESSION['cpf_usuario'],
+                    $cnpj,
+                    $_SESSION['email_usuario'],
+                    $telefone,
+                    $nome,
+                    $senhaHash
+                );
+                
+                if ($stmt->execute()) {
+                    // Limpa dados sensíveis da sessão
+                    unset(
+                        $_SESSION['cpf_usuario'],
+                        $_SESSION['email_usuario'],
+                        $_SESSION['senha_usuario']
+                    );
+                    
+                    // Redireciona para login
+                    header('Location: /projeto-tech-company/src/View/login.php');
+                    exit;
+                } else {
+                    $erro = 'Erro ao cadastrar. Tente novamente.';
+                }
+            }
+            
+            $stmt->close();
+        } catch (Exception $e) {
+            $erro = 'Erro no servidor. Tente mais tarde.';
+            // Em produção, logar o erro: error_log($e->getMessage());
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -41,13 +144,14 @@
             <form method="post" autocomplete="off">
                 <label>Nome do usuário: </label>
                 <input type="text" name="campo_nome_usuario" id="campo_nome_usuario" placeholder="Nome: " required>
-                <label>CNPJ: </label>
-                <input type="text" name="campo_cnpj" id="campo_cnpj" placeholder="CNPJ: " required>
-                <label>Telefone: </label>
-                <input type="number" name="campo_telefone" id="campo_telefone" placeholder="Telefone: " required>
+                <label>E-mail: </label>
+                <input type="email" name="campo-email" id="campo-email" placeholder="E-mail: " required>
+                <label>Senha: </label>
+                <input type="password" name="campo-senha" id="campo-senha" placeholder="Senha: " required>
 
-                <button type="submit">Cadastrar</button>
+                <button type = "submit">Finalizar cadastro</button>
             </form>
+            <a href="/projeto-tech-company/src/View/cadastro.php">Voltar</a>
         </main>
     </section>
 </body>
