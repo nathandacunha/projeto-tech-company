@@ -33,5 +33,22 @@
             </nav>
         </header>
     </section>
+
+    <section>
+        <main>
+            <h1>Complete as informações abaixo: </h1>
+
+            <form method="post" autocomplete="off">
+                <label>Nome do usuário: </label>
+                <input type="text" name="campo_nome_usuario" id="campo_nome_usuario" placeholder="Nome: " required>
+                <label>CNPJ: </label>
+                <input type="text" name="campo_cnpj" id="campo_cnpj" placeholder="CNPJ: " required>
+                <label>Telefone: </label>
+                <input type="number" name="campo_telefone" id="campo_telefone" placeholder="Telefone: " required>
+
+                <button type="submit">Cadastrar</button>
+            </form>
+        </main>
+    </section>
 </body>
 </html>

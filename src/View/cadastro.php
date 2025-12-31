@@ -46,7 +46,7 @@
                 <label>Senha: </label>
                 <input type="password" name="campo-senha" id="campo-senha" placeholder="Senha: " required>
 
-                <button><a href="#">Continuar</a></button>
+                <button><a href="/projeto-tech-company/src/View/cadastro_parte2.php">Continuar</a></button>
             </form>
         </main>
     </section>
